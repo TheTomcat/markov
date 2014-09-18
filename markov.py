@@ -14,7 +14,8 @@ class Markov(object):
     Methods -> constructor([keySize], [noteStarts], [noteEnds])
 
                @param [keySize] specifies the search memory of the Markov chain
-               @param [noteStarts] forces generation to begin at 
+               @param [noteStarts] forces generation to begin at the start of a word
+               @param [noteEnds] forces a halt, maybe. I can't remember.
     """
     def __init__(self, keySize=2, noteStarts=False, noteEnds=False):
         self.R = random.Random()
@@ -100,33 +101,33 @@ class Markov(object):
             message = joinwith.join(message)
         return message
 
-with open("markov\\artofwar.txt") as f:
+with open("corpus\\artofwar.txt") as f:
     text = f.read().lower().replace("\n","")
     G = Markov(5)
     G.parseText(text.split(". "))
 
-with open("markov\\russia.txt") as f:
+with open("corpus\\russia.txt") as f:
     text = f.read().lower().split("\n")
     R = Markov(3, noteStarts=True)
     R.parseText(text)
 
-with open("markov\\stars.txt") as f:
+with open("corpus\\stars.txt") as f:
     text = f.read().lower().split(", ")
     P = Markov(4)
     P.parseText(text)
 
-with open("markov\\greek.txt") as f:
+with open("corpus\\greek.txt") as f:
     text = f.read().lower().split("\n")
 ##    text = [i.strip() for i in text]
     Q = Markov(3,noteStarts=True)
     Q.parseText(text)
 
-with open("markov\\dutch_town.txt") as f:
+with open("corpus\\dutch_town.txt") as f:
     text = f.read().lower().replace(" \n","\n").split("\n")
     D = Markov(3,noteStarts=True)
     D.parseText(text)
 
-with open("markov\\swedish.txt") as f:
+with open("corpus\\swedish.txt") as f:
     text = f.read().lower().replace(" \n","\n").split("\n")
     Sw = Markov(3,noteStarts=True)
     Sw.parseText(text)
@@ -142,51 +143,54 @@ DISTRIBUTED SO LONG AS SUCH COPIES (1) ARE FOR YOUR OR OTHERS
 PERSONAL USE ONLY, AND (2) ARE NOT DISTRIBUTED OR USED
 COMMERCIALLY.  PROHIBITED COMMERCIAL DISTRIBUTION INCLUDES BY ANY
 SERVICE THAT CHARGES FOR DOWNLOAD TIME OR FOR MEMBERSHIP.>>"""
-with open("markov\\shakespear.txt") as f:
+with open("corpus\\shakespear.txt") as f:
     text = f.read().lower()
     text = text.replace(cr,"")
     lines = [i.strip() for i in text.split("\n")]
     S = Markov(5, noteStarts=True)
     S.parseText(lines)
+
+    
+####
+####def test_getRandom():
+####    k=random.choice(list(S.dict.keys()))
+####
+####def test_getElement():
+####    k=S.dict.popitem()
+####print(timeit("test_getRandom()", setup="from __main__ import test_getRandom", number=10000))
+####print(timeit("test_getElement()", setup="from __main__ import test_getElement", number=10000))
 ##
-##def test_getRandom():
-##    k=random.choice(list(S.dict.keys()))
+##class Markov2(object):
+##    def __init__(self, samples, order, minLength):
+##        self.order = order
+##        self.minLength = minLength
+##        self.chains = {}
+##        self.used = []
+##        self.samples = [i.strip().upper() for i in samples if len(i) > order]
+##        for word in self.samples:
+##            for letter in xrange(len(word)-order):
+##                token = word[letter:letter+order]
+##                entries = self.chains.setdefault(token, list())
+##                entries.append(word[letter + order])
 ##
-##def test_getElement():
-##    k=S.dict.popitem()
-##print(timeit("test_getRandom()", setup="from __main__ import test_getRandom", number=10000))
-##print(timeit("test_getElement()", setup="from __main__ import test_getElement", number=10000))
-
-class Markov2(object):
-    def __init__(self, samples, order, minLength):
-        self.order = order
-        self.minLength = minLength
-        self.chains = {}
-        self.used = []
-        self.samples = [i.strip().upper() for i in samples if len(i) > order]
-        for word in self.samples:
-            for letter in xrange(len(word)-order):
-                token = word[letter:letter+order]
-                entries = self.chains.setdefault(token, list())
-                entries.append(word[letter + order])
-
-    def next(self):
-        s = ""; 
-        while True:
-            n = random.choice(self.samples)
-            i = random.randint(0, len(n) - self.order)
-            s = n[i:i+self.order]
-            while len(s) < len(n):
-                i = random.randint(0, len(s) - self.order)
-                token = s[i:i+self.order]
-                if token not in self.chains:
-                    break 
-                s += random.choice(self.chains[token])
-            s = s[0] + s[1:].lower()
-            if not (s in self.samples or s in self.used or len(s) < self.minLength):
-                break
-        self.used.append(s);
-        return s;
-
-    def reset(self):
-        self.used.Clear()
+##    def next(self):
+##        s = ""; 
+##        while True:
+##            n = random.choice(self.samples)
+##            i = random.randint(0, len(n) - self.order)
+##            s = n[i:i+self.order]
+##            while len(s) < len(n):
+##                i = random.randint(0, len(s) - self.order)
+##                token = s[i:i+self.order]
+##                if token not in self.chains:
+##                    break 
+##                s += random.choice(self.chains[token])
+##            s = s[0] + s[1:].lower()
+##            if not (s in self.samples or s in self.used or len(s) < self.minLength):
+##                break
+##        self.used.append(s);
+##        return s;
+##
+##    def reset(self):
+##        self.used.Clear()
+##
